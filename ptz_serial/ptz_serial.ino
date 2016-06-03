@@ -13,59 +13,47 @@ AccelStepper pan(AccelStepper::DRIVER, 8, 9);
 AccelStepper tilt(AccelStepper::DRIVER, 10, 11);
 
 //These are variables that hold the servo IDs.
-char tiltChannel = 0;
-char panChannel = 1;
-
+long tiltChannel = 2;
+long panChannel = 3;
+long inpu = -1;
+long number = -1;
 
 
 
 //This is a character that will hold data from the Serial port.
-char serialChar = 0;
 
 void setup()
 {
-  Serial.begin(57600);
+  Serial.begin(9600);
   pan.setMaxSpeed(10000);
   pan.setSpeed(1000);
   tilt.setMaxSpeed(10000);
   tilt.setSpeed(1000);
+
 }
 
 void loop() {
-  while (Serial.available() <= 0); //Wait for a character on the serial port.
-  serialChar = Serial.read();     //Copy the character from the serial port to the variable
-  if (serialChar == tiltChannel) { //Check to see if the character is the servo ID for the tilt servo
-    Serial.print("In da Loop");
-    while (Serial.available() <= 0); //Wait for the second command byte from the serial port.
-    input=Serial.read();
-    long number = atol( input );
-      tilt.moveTo(number); //Set the tilt servo position to the value of the second command byte received on the serial port
-      Serial.print("Tilt is: ");
-      Serial.println(tilt.currentPosition());      
-    }
-  }
-  else if (serialChar == panChannel) { //Check to see if the initial serial character was the servo ID for the pan servo.
-      while (Serial.available() <= 0); //Wait for the second command byte from the serial port.
-      static char input[16];
-      static uint8_t i;
-      char c = Serial.read();
+while(!Serial.available()) ; //Wait for a character on the serial port.
+inpu=Serial.parseInt();    //Copy the character from the serial port to the variable
+Serial.println(inpu);
+Serial.flush();
+if (inpu == tiltChannel) { //Check to see if the character is the servo ID for the tilt servo
+  Serial.println("Ready for Tilt Amount");
+  Serial.flush();
+  while(!Serial.available()); //Wait for the second command byte from the serial port.
+  number=Serial.parseInt();
+  tilt.moveTo(number); //Set the tilt servo position to the value of the second command byte received on the serial port
+  Serial.print("Tilt is: ");
+  Serial.println(tilt.currentPosition());
+}
 
-      if ( c != '\r' && i < 15 ) // assuming "Carriage Return" is chosen in the Serial monitor as the line ending character
-      {
-        input[i++] = c;
-      }
-      else
-      {
-        input[i] = '\0';
-        i = 0;
-
-        long number = atol( input );
-        pan.moveTo(number);
-        Serial.print("Pan is: ");
-        Serial.println(pan.currentPosition());
-      }  //Set the pan servo position to the value of the second command byte received from the serial port.
-    }
+//  else if (inpu == panChannel) 
+//  { //Check to see if the initial serial character was the servo ID for the pan servo.
+//      while (Serial.available() <= 8); //Wait for the second command byte from the serial port.
+//      
+//        pan.moveTo(number);
+//        Serial.print("Pan is: ");
+//        Serial.println(pan.currentPosition());
+//  }  //Set the pan servo position to the value of the second command byte received from the serial port.
+}
     //If the character is not the pan or tilt servo ID, it is ignored.
-    
-
-  }
