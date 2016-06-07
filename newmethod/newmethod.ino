@@ -9,13 +9,16 @@ AccelStepper tilt(AccelStepper::DRIVER, 10, 11);
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB
-  }
   pan.setMaxSpeed(1000000);
   pan.setSpeed(1000000);
   tilt.setMaxSpeed(1000000);
   tilt.setSpeed(1000000);
+  pan.setAcceleration(1000);
+  tilt.setAcceleration(1000);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB
+  }
+  
 }
 
 void loop() {
